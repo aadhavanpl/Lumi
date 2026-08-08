@@ -60,20 +60,25 @@ struct MarketplaceTests {
 
     @Test func discoveredURLsFindsMarketplaceJSONUnderEachMarketplaceDirectory() throws {
         let configDir = makeTempDirectory()
+        let resolvedConfigDir = configDir.resolvingSymlinksInPath()
         defer { try? FileManager.default.removeItem(at: configDir) }
         try write("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json", in: configDir)
         try write("plugins/marketplaces/expo-plugins/.claude-plugin/marketplace.json", in: configDir)
 
         let urls = Marketplace.discoveredURLs(environment: ["CLAUDE_CONFIG_DIR": configDir.path])
 
-        #expect(Set(urls.map(\.path)) == Set([
-            configDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").path,
-            configDir.appendingPathComponent("plugins/marketplaces/expo-plugins/.claude-plugin/marketplace.json").path
-        ]))
+        let resolvedUrls = Set(urls.map { $0.resolvingSymlinksInPath().path })
+        let expectedPaths = Set([
+            resolvedConfigDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").resolvingSymlinksInPath().path,
+            resolvedConfigDir.appendingPathComponent("plugins/marketplaces/expo-plugins/.claude-plugin/marketplace.json").resolvingSymlinksInPath().path
+        ])
+
+        #expect(resolvedUrls == expectedPaths)
     }
 
     @Test func discoveredURLsSkipsMarketplaceDirectoriesMissingMarketplaceJSON() throws {
         let configDir = makeTempDirectory()
+        let resolvedConfigDir = configDir.resolvingSymlinksInPath()
         defer { try? FileManager.default.removeItem(at: configDir) }
         try write("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json", in: configDir)
         try FileManager.default.createDirectory(
@@ -83,9 +88,10 @@ struct MarketplaceTests {
 
         let urls = Marketplace.discoveredURLs(environment: ["CLAUDE_CONFIG_DIR": configDir.path])
 
-        #expect(urls.map(\.path) == [
-            configDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").path
-        ])
+        let resolvedUrls = urls.map { $0.resolvingSymlinksInPath().path }
+        let expectedPath = resolvedConfigDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").resolvingSymlinksInPath().path
+
+        #expect(resolvedUrls == [expectedPath])
     }
 
     @Test func discoveredURLsReturnsEmptyWhenMarketplacesDirectoryDoesNotExist() {

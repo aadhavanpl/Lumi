@@ -60,6 +60,7 @@ extension Marketplace {
         let marketplacesDir = URL(fileURLWithPath: base)
             .appendingPathComponent("plugins")
             .appendingPathComponent("marketplaces")
+            .resolvingSymlinksInPath()
 
         guard let entries = try? fileManager.contentsOfDirectory(
             at: marketplacesDir,
