@@ -89,4 +89,10 @@ struct DiscoveredSkillScanTests {
         let scopes: Set<SkillScope> = [global, project, .global]
         #expect(scopes.count == 2)
     }
+
+    @Test func displayNameIsGlobalOrTheProjectDirectoryName() {
+        #expect(SkillScope.global.displayName == "Global")
+        let root = URL(fileURLWithPath: "/tmp/my-project")
+        #expect(SkillScope.project(root: root).displayName == "my-project")
+    }
 }

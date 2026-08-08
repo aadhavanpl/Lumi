@@ -7,7 +7,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var store = InventoryStore()
-    @State private var selectedItem: SkillInventoryItem?
+    @State private var selectedItemID: String?
 
     var body: some View {
         NavigationSplitView {
@@ -15,10 +15,10 @@ struct ContentView: View {
         } content: {
             SkillListView(
                 items: InventoryFiltering.filteredItems(store.items, selection: store.selection),
-                selection: $selectedItem
+                selection: $selectedItemID
             )
         } detail: {
-            SkillDetailView(item: selectedItem)
+            SkillDetailView(item: store.items.first { $0.id == selectedItemID })
         }
         .toolbar {
             ToolbarItem {

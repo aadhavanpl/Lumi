@@ -16,7 +16,7 @@ struct SidebarView: View {
 
             Section("By Scope") {
                 ForEach(InventoryFiltering.distinctScopes(in: items), id: \.self) { scope in
-                    Label(scopeLabel(scope), systemImage: "folder")
+                    Label(scope.displayName, systemImage: "folder")
                         .tag(SidebarSection.byScope(scope))
                 }
             }
@@ -44,14 +44,7 @@ struct SidebarView: View {
     }
 
     private var needsAttentionCount: Int {
-        items.filter { !$0.statuses.isEmpty }.count
-    }
-
-    private func scopeLabel(_ scope: SkillScope) -> String {
-        switch scope {
-        case .global: return "Global"
-        case .project(let root): return root.lastPathComponent
-        }
+        InventoryFiltering.filteredItems(items, selection: .needsAttention).count
     }
 }
 

@@ -15,6 +15,8 @@ struct SkillInventoryItem: Hashable {
     let scope: SkillScope
     let origin: SkillOrigin
     let statuses: [SkillStatus]
+
+    var id: String { "\(path.path)#\(agentID)" }
 }
 
 enum SkillStatus: Hashable {

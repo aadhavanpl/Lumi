@@ -101,4 +101,16 @@ struct InventoryFilteringTests {
 
         #expect(InventoryFiltering.distinctAgentIDs(in: items) == ["claude-code", "codex"])
     }
+
+    @Test func needsAttentionCountMatchesFilteredItemsCount() {
+        let items = [
+            item(name: "healthy", statuses: []),
+            item(name: "flagged-1", statuses: [.installedButDisabled]),
+            item(name: "flagged-2", statuses: [.installedButDisabled])
+        ]
+
+        let filteredCount = InventoryFiltering.filteredItems(items, selection: .needsAttention).count
+
+        #expect(filteredCount == 2)
+    }
 }

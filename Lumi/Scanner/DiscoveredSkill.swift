@@ -12,6 +12,15 @@ enum SkillScope: Hashable {
     case project(root: URL)
 }
 
+extension SkillScope {
+    var displayName: String {
+        switch self {
+        case .global: return "Global"
+        case .project(let root): return root.lastPathComponent
+        }
+    }
+}
+
 struct DiscoveredSkill: Equatable {
     let path: URL
     let agentID: String

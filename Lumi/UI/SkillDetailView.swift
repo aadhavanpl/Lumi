@@ -58,7 +58,7 @@ struct SkillDetailView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Location").font(.headline)
             Text(item.path.path).font(.system(.body, design: .monospaced)).textSelection(.enabled)
-            Text("\(scopeLabel(item.scope)) · \(item.agentID)").font(.caption).foregroundStyle(.secondary)
+            Text("\(item.scope.displayName) · \(item.agentID)").font(.caption).foregroundStyle(.secondary)
         }
     }
 
@@ -68,13 +68,6 @@ struct SkillDetailView: View {
             ForEach(item.statuses, id: \.self) { status in
                 Text(status.detailDescription)
             }
-        }
-    }
-
-    private func scopeLabel(_ scope: SkillScope) -> String {
-        switch scope {
-        case .global: return "Global"
-        case .project(let root): return root.lastPathComponent
         }
     }
 }

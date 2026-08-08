@@ -7,7 +7,7 @@ import SwiftUI
 
 struct SkillListView: View {
     let items: [SkillInventoryItem]
-    @Binding var selection: SkillInventoryItem?
+    @Binding var selection: String?
 
     private let columnWidths = ColumnWidths()
 
@@ -15,7 +15,7 @@ struct SkillListView: View {
         VStack(spacing: 0) {
             header
             Divider()
-            List(items, id: \.self, selection: $selection) { item in
+            List(items, id: \.id, selection: $selection) { item in
                 SkillRow(item: item, columnWidths: columnWidths)
             }
             .listStyle(.inset)
@@ -67,7 +67,7 @@ private struct SkillRow: View {
             OriginChip(origin: item.origin)
                 .frame(width: columnWidths.origin, alignment: .leading)
 
-            Text(scopeLabel(item.scope))
+            Text(item.scope.displayName)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(width: columnWidths.scope, alignment: .leading)
@@ -81,13 +81,6 @@ private struct SkillRow: View {
                 .frame(width: columnWidths.version, alignment: .leading)
         }
         .padding(.vertical, 4)
-    }
-
-    private func scopeLabel(_ scope: SkillScope) -> String {
-        switch scope {
-        case .global: return "Global"
-        case .project(let root): return root.lastPathComponent
-        }
     }
 
     private func versionLabel(_ origin: SkillOrigin) -> String {
@@ -133,7 +126,11 @@ private struct AgentIconView: View {
             if let image = NSImage(named: AgentIcon.assetName(forAgentID: agentID)) {
                 Image(nsImage: image).resizable().scaledToFit()
             } else {
-                Image(systemName: "questionmark.app").foregroundStyle(.secondary)
+                Text(agentID.prefix(2).uppercased())
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 20, height: 20)
+                    .background(.secondary.opacity(0.15), in: Circle())
             }
         }
         .frame(width: 20, height: 20)
