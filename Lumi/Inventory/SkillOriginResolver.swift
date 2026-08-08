@@ -13,8 +13,7 @@ enum SkillOrigin: Equatable {
     case handWritten
 }
 
-/// Plugin match is a path-containment check (unambiguous); the lockfile match is a name lookup
-/// that could theoretically collide, so plugin is checked first.
+/// Plugin match is path-based (unambiguous); lockfile lookup could collide, so plugin is checked first.
 enum SkillOriginResolver {
     static func resolve(
         path: URL,

@@ -539,7 +539,7 @@ struct SkillOriginResolverTests {
     }
 
     @Test func doesNotFalsePositiveOnPathComponentPrefixCollision() {
-        let installPath = "/Users/aadhavan/.claude/plugins/cache/claude-plugins-official/expo/1.0.0"
+        let installPath = "/Users/aadhavan/.claude/plugins/cache/claude-plugins-official/expo"
         let unrelatedSkillPath = URL(
             fileURLWithPath: "/Users/aadhavan/.claude/plugins/cache/claude-plugins-official/expo-extra/1.0.0/skill"
         )
