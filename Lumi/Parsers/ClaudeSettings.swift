@@ -14,6 +14,10 @@ struct ClaudeSettings: Decodable, Equatable {
         case enabledPlugins
     }
 
+    init(enabledPlugins: [String: Bool] = [:]) {
+        self.enabledPlugins = enabledPlugins
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabledPlugins = try container.decodeIfPresent([String: Bool].self, forKey: .enabledPlugins) ?? [:]

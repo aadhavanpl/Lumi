@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SkillInventoryItem: Equatable {
+struct SkillInventoryItem: Hashable {
     let name: String
     let description: String?
     let path: URL
@@ -17,7 +17,7 @@ struct SkillInventoryItem: Equatable {
     let statuses: [SkillStatus]
 }
 
-enum SkillStatus: Equatable {
+enum SkillStatus: Hashable {
     case pluginCatalogDrifted(installedSha: String, pinnedSha: String)
     case installedButDisabled
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SkillScope: Equatable {
+enum SkillScope: Hashable {
     case global
     case project(root: URL)
 }

@@ -82,4 +82,11 @@ struct DiscoveredSkillScanTests {
 
         #expect(discovered.isEmpty)
     }
+
+    @Test func scopeIsHashableForUseAsSetMembersAndDictionaryKeys() {
+        let global = SkillScope.global
+        let project = SkillScope.project(root: URL(fileURLWithPath: "/tmp/project"))
+        let scopes: Set<SkillScope> = [global, project, .global]
+        #expect(scopes.count == 2)
+    }
 }

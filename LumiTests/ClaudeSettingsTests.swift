@@ -47,4 +47,14 @@ struct ClaudeSettingsTests {
         let url = ClaudeSettings.defaultURL(environment: [:])
         #expect(url.path == (NSHomeDirectory() as NSString).appendingPathComponent(".claude/settings.json"))
     }
+
+    @Test func defaultInitProducesEmptyEnabledPlugins() {
+        let settings = ClaudeSettings()
+        #expect(settings.enabledPlugins.isEmpty)
+    }
+
+    @Test func defaultInitAcceptsAnExplicitDictionary() {
+        let settings = ClaudeSettings(enabledPlugins: ["a@b": true])
+        #expect(settings.enabledPlugins == ["a@b": true])
+    }
 }
