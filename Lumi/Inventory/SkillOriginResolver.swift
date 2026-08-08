@@ -38,7 +38,8 @@ enum SkillOriginResolver {
             let marketplaceName = String(key[key.index(after: atIndex)...])
 
             guard let entry = entries.first(where: {
-                isContained(URL(fileURLWithPath: $0.installPath).pathComponents, in: pathComponents)
+                let resolvedInstallPath = URL(fileURLWithPath: $0.installPath).resolvingSymlinksInPath()
+                return isContained(resolvedInstallPath.pathComponents, in: pathComponents)
             }) else { continue }
 
             return .plugin(name: pluginName, marketplaceName: marketplaceName, version: entry.version)

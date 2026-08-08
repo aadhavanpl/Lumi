@@ -11,6 +11,12 @@ import Testing
 
 struct SkillOriginResolverTests {
 
+    private func makeTempDirectory() -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
+    }
+
     private func installedPlugins(_ entries: [String: [InstalledPluginEntry]]) -> InstalledPlugins {
         InstalledPlugins(version: 2, plugins: entries)
     }
@@ -112,5 +118,39 @@ struct SkillOriginResolverTests {
         )
 
         #expect(origin == .handWritten)
+    }
+
+    @Test func resolvesPluginOriginWhenInstallPathIsReachedThroughASymlinkedConfigDir() throws {
+        let realBase = makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: realBase) }
+        let installDir = realBase.appendingPathComponent("plugins/cache/claude-plugins-official/superpowers/6.0.3")
+        try FileManager.default.createDirectory(
+            at: installDir.appendingPathComponent("skills/brainstorming"),
+            withIntermediateDirectories: true
+        )
+
+        let symlinkBase = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createSymbolicLink(at: symlinkBase, withDestinationURL: realBase)
+        defer { try? FileManager.default.removeItem(at: symlinkBase) }
+
+        // SkillScanner always resolves symlinks before returning a DiscoveredSkill.path.
+        let discoveredSkillPath = symlinkBase
+            .appendingPathComponent("plugins/cache/claude-plugins-official/superpowers/6.0.3/skills/brainstorming")
+            .resolvingSymlinksInPath()
+
+        // installed_plugins.json stores the raw path exactly as configured, unresolved.
+        let unresolvedInstallPath = symlinkBase
+            .appendingPathComponent("plugins/cache/claude-plugins-official/superpowers/6.0.3").path
+        let plugins = installedPlugins([
+            "superpowers@claude-plugins-official": [pluginEntry(installPath: unresolvedInstallPath, version: "6.0.3")]
+        ])
+
+        let origin = SkillOriginResolver.resolve(
+            path: discoveredSkillPath,
+            globalLockfile: lockfile([:]),
+            installedPlugins: plugins
+        )
+
+        #expect(origin == .plugin(name: "superpowers", marketplaceName: "claude-plugins-official", version: "6.0.3"))
     }
 }
