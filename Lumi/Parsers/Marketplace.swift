@@ -60,7 +60,7 @@ extension Marketplace {
         let marketplacesDir = URL(fileURLWithPath: base)
             .appendingPathComponent("plugins")
             .appendingPathComponent("marketplaces")
-            .resolvingSymlinksInPath()
+            .resolvingSymlinksInPath() // Handles symlinked CLAUDE_CONFIG_DIR; doesn't affect /var canonicalization.
 
         guard let entries = try? fileManager.contentsOfDirectory(
             at: marketplacesDir,

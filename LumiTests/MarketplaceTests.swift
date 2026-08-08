@@ -67,6 +67,7 @@ struct MarketplaceTests {
 
         let urls = Marketplace.discoveredURLs(environment: ["CLAUDE_CONFIG_DIR": configDir.path])
 
+        // Re-resolve both sides: contentsOfDirectory canonicalizes /var→/private/var; .resolvingSymlinksInPath() collapses back to /var.
         let resolvedUrls = Set(urls.map { $0.resolvingSymlinksInPath().path })
         let expectedPaths = Set([
             resolvedConfigDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").resolvingSymlinksInPath().path,
@@ -88,6 +89,7 @@ struct MarketplaceTests {
 
         let urls = Marketplace.discoveredURLs(environment: ["CLAUDE_CONFIG_DIR": configDir.path])
 
+        // Re-resolve both sides: contentsOfDirectory canonicalizes /var→/private/var; .resolvingSymlinksInPath() collapses back to /var.
         let resolvedUrls = urls.map { $0.resolvingSymlinksInPath().path }
         let expectedPath = resolvedConfigDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").resolvingSymlinksInPath().path
 
