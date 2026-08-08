@@ -31,6 +31,6 @@ jobs:
           sudo xcode-select -s "$XCODE_PATH"
           xcodebuild -version
       - name: Build
-        run: xcodebuild -project Lumi.xcodeproj -scheme Lumi -configuration Debug build
+        run: xcodebuild -project Lumi.xcodeproj -scheme Lumi -configuration Debug build CODE_SIGNING_ALLOWED=NO
       - name: Test
-        run: xcodebuild -project Lumi.xcodeproj -scheme Lumi -configuration Debug test
+        run: xcodebuild -project Lumi.xcodeproj -scheme Lumi -configuration Debug test CODE_SIGNING_ALLOWED=NO
