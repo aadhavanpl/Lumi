@@ -14,7 +14,8 @@ making design decisions. Don't re-litigate a decision that already has an ADR.
 - Liquid Glass is used deliberately, not everywhere — see SPEC §7. Don't coat every view in
   `.glassEffect()`.
 - No comments unless they explain a non-obvious *why* (a workaround, a hidden constraint).
-  Don't explain what the code already says.
+  Don't explain what the code already says. When one is warranted, keep it to one line — not
+  a paragraph.
 - SwiftLint runs as an Xcode build phase and in CI (`--strict`). Keep it green.
 
 ## Workflow
@@ -28,6 +29,7 @@ This project follows GitHub issue → branch → PR → review → merge. No dir
   and understand each step, not receive a finished feature.
 - Write tests alongside implementation (`LumiTests`), especially for the hash engine — verify
   against the fixtures in SPEC §8.
+- PR descriptions: just `## Summary` and `## Test plan`, both kept short. No extra headers.
 
 ## Before writing code
 
