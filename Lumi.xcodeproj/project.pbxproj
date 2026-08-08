@@ -32,16 +32,22 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CD975DAD3026ED0C0041E19C /* Lumi */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = Lumi;
 			sourceTree = "<group>";
 		};
 		CD975DBB3026ED0D0041E19C /* LumiTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = LumiTests;
 			sourceTree = "<group>";
 		};
 		CD975DC53026ED0D0041E19C /* LumiUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = LumiUITests;
 			sourceTree = "<group>";
 		};
@@ -99,6 +105,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD975DCC3026ED0D0041E19C /* Build configuration list for PBXNativeTarget "Lumi" */;
 			buildPhases = (
+				7FD806A08A034584255AF8CF /* SwiftLint */,
 				CD975DA73026ED0C0041E19C /* Sources */,
 				CD975DA83026ED0C0041E19C /* Frameworks */,
 				CD975DA93026ED0C0041E19C /* Resources */,
@@ -111,8 +118,6 @@
 				CD975DAD3026ED0C0041E19C /* Lumi */,
 			);
 			name = Lumi;
-			packageProductDependencies = (
-			);
 			productName = Lumi;
 			productReference = CD975DAB3026ED0C0041E19C /* Lumi.app */;
 			productType = "com.apple.product-type.application";
@@ -134,8 +139,6 @@
 				CD975DBB3026ED0D0041E19C /* LumiTests */,
 			);
 			name = LumiTests;
-			packageProductDependencies = (
-			);
 			productName = LumiTests;
 			productReference = CD975DB83026ED0D0041E19C /* LumiTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -157,8 +160,6 @@
 				CD975DC53026ED0D0041E19C /* LumiUITests */,
 			);
 			name = LumiUITests;
-			packageProductDependencies = (
-			);
 			productName = LumiUITests;
 			productReference = CD975DC23026ED0D0041E19C /* LumiUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -230,6 +231,29 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7FD806A08A034584255AF8CF /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if command -v swiftlint >/dev/null 2>&1; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed. Install with 'brew install swiftlint' to lint locally (CI still enforces it).\"\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		CD975DA73026ED0C0041E19C /* Sources */ = {
@@ -398,16 +422,17 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N53AY583X7;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.aadhavan.Lumi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -430,16 +455,17 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N53AY583X7;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.aadhavan.Lumi;
 				PRODUCT_NAME = "$(TARGET_NAME)";

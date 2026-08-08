@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install SwiftLint
+        run: brew install swiftlint
+      - name: Run SwiftLint (strict)
+        run: swiftlint lint --strict
+
+  build-and-test:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select latest available Xcode 26
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE_PATH" ]; then
+            echo "No Xcode 26.x found on this runner image" >&2
+            ls /Applications | grep Xcode
+            exit 1
+          fi
+          sudo xcode-select -s "$XCODE_PATH"
+          xcodebuild -version
+      - name: Build
+        run: xcodebuild -project Lumi.xcodeproj -scheme Lumi -configuration Debug build CODE_SIGNING_ALLOWED=NO
+      - name: Test
+        run: xcodebuild -project Lumi.xcodeproj -scheme Lumi -configuration Debug test CODE_SIGNING_ALLOWED=NO
