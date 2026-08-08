@@ -34,9 +34,6 @@ struct SkillFolderHasherTests {
     }
 
     @Test func sortsMixedCaseFilenamesByCaseInsensitiveOrderNotCodePointOrder() throws {
-        // "SKILL.md" sorts before "references/…" by code point (S=0x53 < r=0x72), but
-        // case-insensitive primary ordering (matching JS localeCompare) puts "references/…"
-        // first. RESEARCH-skills-sh.md §3 documents this exact trap.
         let root = makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: root) }
         try write("SKILL.md", in: root, contents: "skill content")

@@ -11,9 +11,7 @@ import Foundation
 enum SkillFolderHasher {
     static let skipDirectoryNames: Set<String> = [".git", "node_modules"]
 
-    /// Sorts by case-insensitive comparison, not `<`, to match JS `String.localeCompare` —
-    /// see RESEARCH-skills-sh.md §3. A code-point sort produces a different hash for any skill
-    /// mixing case across filenames and falsely reports it as drifted.
+    /// Case-insensitive sort, not `<`, to match JS `String.localeCompare` (RESEARCH-skills-sh.md §3).
     static func computeHash(at root: URL, fileManager: FileManager = .default) throws -> String {
         let resolvedRoot = root.resolvingSymlinksInPath()
         let relativePaths = try collectRelativeFilePaths(under: resolvedRoot, fileManager: fileManager)
