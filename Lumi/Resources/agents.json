@@ -1,0 +1,42 @@
+[
+    {
+        "id": "claude-code",
+        "name": "Claude Code",
+        "globalBase": "~/.claude",
+        "globalBaseEnvOverride": "CLAUDE_CONFIG_DIR",
+        "globalSkillsSubpath": "skills",
+        "projectSkillsDir": ".claude/skills"
+    },
+    {
+        "id": "codex",
+        "name": "Codex",
+        "globalBase": "~/.codex",
+        "globalBaseEnvOverride": "CODEX_HOME",
+        "globalSkillsSubpath": "skills",
+        "projectSkillsDir": ".codex/skills"
+    },
+    {
+        "id": "cursor",
+        "name": "Cursor",
+        "globalBase": "~/.cursor",
+        "globalBaseEnvOverride": null,
+        "globalSkillsSubpath": "skills",
+        "projectSkillsDir": null
+    },
+    {
+        "id": "opencode",
+        "name": "opencode",
+        "globalBase": "~/.config",
+        "globalBaseEnvOverride": "XDG_CONFIG_HOME",
+        "globalSkillsSubpath": "opencode/skills",
+        "projectSkillsDir": ".opencode/skills"
+    },
+    {
+        "id": "github-copilot",
+        "name": "GitHub Copilot",
+        "globalBase": "~/.copilot",
+        "globalBaseEnvOverride": null,
+        "globalSkillsSubpath": "skills",
+        "projectSkillsDir": null
+    }
+]

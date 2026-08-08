@@ -32,22 +32,16 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CD975DAD3026ED0C0041E19C /* Lumi */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = Lumi;
 			sourceTree = "<group>";
 		};
 		CD975DBB3026ED0D0041E19C /* LumiTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = LumiTests;
 			sourceTree = "<group>";
 		};
 		CD975DC53026ED0D0041E19C /* LumiUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = LumiUITests;
 			sourceTree = "<group>";
 		};
