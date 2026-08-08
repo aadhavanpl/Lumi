@@ -49,3 +49,30 @@ enum MarketplacePluginSource: Decodable, Equatable {
         }
     }
 }
+
+extension Marketplace {
+    static func discoveredURLs(
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        fileManager: FileManager = .default
+    ) -> [URL] {
+        let override = environment["CLAUDE_CONFIG_DIR"].flatMap { $0.isEmpty ? nil : $0 }
+        let base = override ?? (NSHomeDirectory() as NSString).appendingPathComponent(".claude")
+        let marketplacesDir = URL(fileURLWithPath: base)
+            .appendingPathComponent("plugins")
+            .appendingPathComponent("marketplaces")
+            .resolvingSymlinksInPath() // Handles symlinked CLAUDE_CONFIG_DIR; doesn't affect /var canonicalization.
+
+        guard let entries = try? fileManager.contentsOfDirectory(
+            at: marketplacesDir,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: []
+        ) else {
+            return []
+        }
+
+        return entries
+            .filter { (try? $0.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true }
+            .map { $0.appendingPathComponent(".claude-plugin").appendingPathComponent("marketplace.json") }
+            .filter { fileManager.fileExists(atPath: $0.path) }
+    }
+}
