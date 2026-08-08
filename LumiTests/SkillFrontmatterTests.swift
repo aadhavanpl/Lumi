@@ -94,4 +94,20 @@ struct SkillFrontmatterTests {
 
         #expect(frontmatter.description == "Use when: the user wants to stress-test a plan.")
     }
+
+    @Test func fallsBackToNilWhenDescriptionUsesAYAMLBlockScalarIndicator() throws {
+        let root = makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        try write("SKILL.md", in: root, contents: """
+        ---
+        name: grill-me
+        description: >-
+        ---
+        """)
+
+        let frontmatter = SkillFrontmatter.parse(contentsOf: root.appendingPathComponent("SKILL.md"))
+
+        #expect(frontmatter.name == "grill-me")
+        #expect(frontmatter.description == nil)
+    }
 }

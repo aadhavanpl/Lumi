@@ -32,7 +32,7 @@ struct SkillFrontmatter: Equatable {
             guard let colonIndex = line.firstIndex(of: ":") else { continue }
             let key = line[line.startIndex..<colonIndex].trimmingCharacters(in: .whitespaces)
             let value = line[line.index(after: colonIndex)...].trimmingCharacters(in: .whitespaces)
-            guard !value.isEmpty else { continue }
+            guard !value.isEmpty, !["|", ">", "|-", ">-", "|+", ">+"].contains(value) else { continue }
 
             switch key {
             case "name": name = value
