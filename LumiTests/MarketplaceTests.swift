@@ -46,6 +46,57 @@ struct MarketplaceTests {
     }
     """
 
+    private func makeTempDirectory() -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
+    }
+
+    private func write(_ path: String, in root: URL, contents: String = "{}") throws {
+        let url = root.appendingPathComponent(path)
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try contents.write(to: url, atomically: true, encoding: .utf8)
+    }
+
+    @Test func discoveredURLsFindsMarketplaceJSONUnderEachMarketplaceDirectory() throws {
+        let configDir = makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: configDir) }
+        try write("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json", in: configDir)
+        try write("plugins/marketplaces/expo-plugins/.claude-plugin/marketplace.json", in: configDir)
+
+        let urls = Marketplace.discoveredURLs(environment: ["CLAUDE_CONFIG_DIR": configDir.path])
+
+        #expect(Set(urls.map(\.path)) == Set([
+            configDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").path,
+            configDir.appendingPathComponent("plugins/marketplaces/expo-plugins/.claude-plugin/marketplace.json").path
+        ]))
+    }
+
+    @Test func discoveredURLsSkipsMarketplaceDirectoriesMissingMarketplaceJSON() throws {
+        let configDir = makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: configDir) }
+        try write("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json", in: configDir)
+        try FileManager.default.createDirectory(
+            at: configDir.appendingPathComponent("plugins/marketplaces/empty-marketplace"),
+            withIntermediateDirectories: true
+        )
+
+        let urls = Marketplace.discoveredURLs(environment: ["CLAUDE_CONFIG_DIR": configDir.path])
+
+        #expect(urls.map(\.path) == [
+            configDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").path
+        ])
+    }
+
+    @Test func discoveredURLsReturnsEmptyWhenMarketplacesDirectoryDoesNotExist() {
+        let configDir = makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: configDir) }
+
+        let urls = Marketplace.discoveredURLs(environment: ["CLAUDE_CONFIG_DIR": configDir.path])
+
+        #expect(urls.isEmpty)
+    }
+
     @Test func decodesLocalStringSourceAsLocalCase() throws {
         let marketplace = try Marketplace.decode(from: Data(fixtureJSON.utf8))
         let plugin = try #require(marketplace.plugins.first { $0.name == "agent-sdk-dev" })
