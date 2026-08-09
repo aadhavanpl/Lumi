@@ -1,7 +1,5 @@
 excluded:
   - Lumi.xcodeproj
-  - LumiTests
-  - LumiUITests
 
 opt_in_rules:
   - empty_count

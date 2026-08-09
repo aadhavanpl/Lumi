@@ -5,8 +5,8 @@
 //  Created by Aadhavan on 08/08/26.
 //
 
-import Testing
 @testable import Lumi
+import Testing
 
 struct LumiTests {
 

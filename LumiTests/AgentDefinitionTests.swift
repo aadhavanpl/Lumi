@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct AgentDefinitionTests {
 
@@ -21,9 +21,9 @@ struct AgentDefinitionTests {
             "globalSkillsSubpath": "skills",
             "projectSkillsDir": ".claude/skills"
         }
-        """.data(using: .utf8)!
+        """
 
-        let agent = try JSONDecoder().decode(AgentDefinition.self, from: json)
+        let agent = try JSONDecoder().decode(AgentDefinition.self, from: Data(json.utf8))
 
         #expect(agent.id == "claude-code")
         #expect(agent.name == "Claude Code")
@@ -43,9 +43,9 @@ struct AgentDefinitionTests {
             "globalSkillsSubpath": "skills",
             "projectSkillsDir": null
         }
-        """.data(using: .utf8)!
+        """
 
-        let agent = try JSONDecoder().decode(AgentDefinition.self, from: json)
+        let agent = try JSONDecoder().decode(AgentDefinition.self, from: Data(json.utf8))
 
         #expect(agent.globalBaseEnvOverride == nil)
         #expect(agent.projectSkillsDir == nil)

@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct PluginCatalogDriftDetectorTests {
 
@@ -31,7 +31,13 @@ struct PluginCatalogDriftDetectorTests {
     }
 
     private func pinnedSource(sha: String) -> MarketplacePluginSource {
-        .pinned(PinnedMarketplaceSource(kind: "url", url: "https://github.com/obra/superpowers.git", path: nil, ref: nil, sha: sha))
+        .pinned(PinnedMarketplaceSource(
+            kind: "url",
+            url: "https://github.com/obra/superpowers.git",
+            path: nil,
+            ref: nil,
+            sha: sha
+        ))
     }
 
     // Real values from this machine's reference data, matching ADR 0007's example.

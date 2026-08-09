@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct InstalledPluginsTests {
 
@@ -69,6 +69,7 @@ struct InstalledPluginsTests {
 
     @Test func defaultURLFallsBackToDotClaudeWhenUnset() {
         let url = InstalledPlugins.defaultURL(environment: [:])
-        #expect(url.path == (NSHomeDirectory() as NSString).appendingPathComponent(".claude/plugins/installed_plugins.json"))
+        let expected = (NSHomeDirectory() as NSString).appendingPathComponent(".claude/plugins/installed_plugins.json")
+        #expect(url.path == expected)
     }
 }

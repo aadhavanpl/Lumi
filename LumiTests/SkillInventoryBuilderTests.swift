@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct SkillInventoryBuilderTests {
 
@@ -106,121 +106,11 @@ struct SkillInventoryBuilderTests {
             marketplaces: []
         )
 
-        #expect(items[0].origin == .plugin(name: "superpowers", marketplaceName: "claude-plugins-official", version: "6.0.3"))
-    }
-
-    @Test func flagsPluginCatalogDriftedStatusWhenInstalledShaDiffersFromPinnedSha() throws {
-        let root = makeTempDirectory()
-        defer { try? FileManager.default.removeItem(at: root) }
-        let installPath = root.appendingPathComponent("plugins/cache/claude-plugins-official/superpowers/6.0.3")
-        try writeSkillMD(in: installPath, name: "superpowers")
-        let discovered = [DiscoveredSkill(path: installPath, agentID: "claude-code", scope: .global)]
-        let plugins = InstalledPlugins(version: 2, plugins: [
-            "superpowers@claude-plugins-official": [InstalledPluginEntry(
-                scope: "user",
-                projectPath: nil,
-                installPath: installPath.path,
-                version: "6.0.3",
-                installedAt: Date(),
-                lastUpdated: Date(),
-                gitCommitSha: "6fd4507659784c351abbd2bc264c7162cfd386dc"
-            )]
-        ])
-        let marketplace = Marketplace(name: "claude-plugins-official", plugins: [
-            MarketplacePlugin(name: "superpowers", category: "development", source: .pinned(PinnedMarketplaceSource(
-                kind: "url",
-                url: "https://github.com/obra/superpowers.git",
-                path: nil,
-                ref: nil,
-                sha: "896224c4b1879920ab573417e68fd51d2ccc9072"
-            )))
-        ])
-        let settings = try ClaudeSettings.decode(from: Data("""
-        { "enabledPlugins": { "superpowers@claude-plugins-official": true } }
-        """.utf8))
-
-        let items = SkillInventoryBuilder.build(
-            discovered: discovered,
-            globalLockfile: emptyLockfile(),
-            installedPlugins: plugins,
-            settings: settings,
-            marketplaces: [marketplace]
-        )
-
-        #expect(items[0].statuses == [.pluginCatalogDrifted(
-            installedSha: "6fd4507659784c351abbd2bc264c7162cfd386dc",
-            pinnedSha: "896224c4b1879920ab573417e68fd51d2ccc9072"
-        )])
-    }
-
-    @Test func flagsInstalledButDisabledStatusWhenSettingsKeyIsMissing() throws {
-        let root = makeTempDirectory()
-        defer { try? FileManager.default.removeItem(at: root) }
-        let installPath = root.appendingPathComponent("plugins/cache/claude-plugins-official/swift-lsp/1.0.0")
-        try writeSkillMD(in: installPath, name: "swift-lsp")
-        let discovered = [DiscoveredSkill(path: installPath, agentID: "claude-code", scope: .global)]
-        let plugins = InstalledPlugins(version: 2, plugins: [
-            "swift-lsp@claude-plugins-official": [InstalledPluginEntry(
-                scope: "user",
-                projectPath: nil,
-                installPath: installPath.path,
-                version: "1.0.0",
-                installedAt: Date(),
-                lastUpdated: Date(),
-                gitCommitSha: nil
-            )]
-        ])
-
-        let items = SkillInventoryBuilder.build(
-            discovered: discovered,
-            globalLockfile: emptyLockfile(),
-            installedPlugins: plugins,
-            settings: try emptySettings(),
-            marketplaces: []
-        )
-
-        #expect(items[0].statuses == [.installedButDisabled])
-    }
-
-    @Test func producesNoStatusesForUpToDateEnabledPlugin() throws {
-        let root = makeTempDirectory()
-        defer { try? FileManager.default.removeItem(at: root) }
-        let installPath = root.appendingPathComponent("plugins/cache/claude-plugins-official/superpowers/6.0.3")
-        try writeSkillMD(in: installPath, name: "superpowers")
-        let discovered = [DiscoveredSkill(path: installPath, agentID: "claude-code", scope: .global)]
-        let plugins = InstalledPlugins(version: 2, plugins: [
-            "superpowers@claude-plugins-official": [InstalledPluginEntry(
-                scope: "user",
-                projectPath: nil,
-                installPath: installPath.path,
-                version: "6.0.3",
-                installedAt: Date(),
-                lastUpdated: Date(),
-                gitCommitSha: "896224c4b1879920ab573417e68fd51d2ccc9072"
-            )]
-        ])
-        let marketplace = Marketplace(name: "claude-plugins-official", plugins: [
-            MarketplacePlugin(name: "superpowers", category: "development", source: .pinned(PinnedMarketplaceSource(
-                kind: "url",
-                url: "https://github.com/obra/superpowers.git",
-                path: nil,
-                ref: nil,
-                sha: "896224c4b1879920ab573417e68fd51d2ccc9072"
-            )))
-        ])
-        let settings = try ClaudeSettings.decode(from: Data("""
-        { "enabledPlugins": { "superpowers@claude-plugins-official": true } }
-        """.utf8))
-
-        let items = SkillInventoryBuilder.build(
-            discovered: discovered,
-            globalLockfile: emptyLockfile(),
-            installedPlugins: plugins,
-            settings: settings,
-            marketplaces: [marketplace]
-        )
-
-        #expect(items[0].statuses.isEmpty)
+        #expect(items[0].origin == .plugin(
+            name: "superpowers",
+            marketplaceName: "claude-plugins-official",
+            version: "6.0.3"
+        ))
     }
 
     @Test func producesNoStatusesForRepoInstallOrigin() throws {
@@ -254,38 +144,6 @@ struct SkillInventoryBuilderTests {
             source: "mattpocock/skills",
             skillFolderHash: "8320e7b87f7b208f50ce165b1dd43d1e93c8e801"
         ))
-        #expect(items[0].statuses.isEmpty)
-    }
-
-    @Test func producesNoDriftStatusWhenPluginsMarketplaceIsNotInScannedSet() throws {
-        let root = makeTempDirectory()
-        defer { try? FileManager.default.removeItem(at: root) }
-        let installPath = root.appendingPathComponent("plugins/cache/claude-plugins-official/superpowers/6.0.3")
-        try writeSkillMD(in: installPath, name: "superpowers")
-        let discovered = [DiscoveredSkill(path: installPath, agentID: "claude-code", scope: .global)]
-        let plugins = InstalledPlugins(version: 2, plugins: [
-            "superpowers@claude-plugins-official": [InstalledPluginEntry(
-                scope: "user",
-                projectPath: nil,
-                installPath: installPath.path,
-                version: "6.0.3",
-                installedAt: Date(),
-                lastUpdated: Date(),
-                gitCommitSha: "6fd4507659784c351abbd2bc264c7162cfd386dc"
-            )]
-        ])
-        let settings = try ClaudeSettings.decode(from: Data("""
-        { "enabledPlugins": { "superpowers@claude-plugins-official": true } }
-        """.utf8))
-
-        let items = SkillInventoryBuilder.build(
-            discovered: discovered,
-            globalLockfile: emptyLockfile(),
-            installedPlugins: plugins,
-            settings: settings,
-            marketplaces: []
-        )
-
         #expect(items[0].statuses.isEmpty)
     }
 

@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct DivergenceDetectorTests {
 
@@ -24,11 +24,11 @@ struct DivergenceDetectorTests {
         contentHash: "june-fork-hash"
     )
 
-    @Test func flagsDistinctCopiesOfTheSameUpstreamSkillWithDifferentContentAsDivergent() {
+    @Test func flagsDistinctCopiesOfTheSameUpstreamSkillWithDifferentContentAsDivergent() throws {
         let groups = DivergenceDetector.detect(copies: [globalCopy, projectCopy])
 
         #expect(groups.count == 1)
-        let group = try! #require(groups.first)
+        let group = try #require(groups.first)
         #expect(group.source == "mattpocock/skills")
         #expect(group.skillPath == "skills/productivity/grill-me/SKILL.md")
         #expect(Set(group.copies) == Set([globalCopy, projectCopy]))

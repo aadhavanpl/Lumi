@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct ShadowingDetectorTests {
 
@@ -15,16 +15,16 @@ struct ShadowingDetectorTests {
     private let projectRoot = URL(fileURLWithPath: "/Users/aadhavan/Developer/abakon-abacus")
     private let projectPath = URL(fileURLWithPath: "/Users/aadhavan/Developer/abakon-abacus/.agents/skills/grill-me")
 
-    @Test func flagsProjectCopyAsShadowingGlobalCopyForSameNameAndAgent() {
+    @Test func flagsProjectCopyAsShadowingGlobalCopyForSameNameAndAgent() throws {
         let discovered = [
             DiscoveredSkill(path: globalPath, agentID: "claude-code", scope: .global),
-            DiscoveredSkill(path: projectPath, agentID: "claude-code", scope: .project(root: projectRoot)),
+            DiscoveredSkill(path: projectPath, agentID: "claude-code", scope: .project(root: projectRoot))
         ]
 
         let shadowed = ShadowingDetector.detect(discovered: discovered)
 
         #expect(shadowed.count == 1)
-        let result = try! #require(shadowed.first)
+        let result = try #require(shadowed.first)
         #expect(result.name == "grill-me")
         #expect(result.agentID == "claude-code")
         #expect(result.projectRoot == projectRoot)
@@ -38,14 +38,16 @@ struct ShadowingDetectorTests {
     }
 
     @Test func reportsNothingWhenOnlyAProjectCopyExists() {
-        let discovered = [DiscoveredSkill(path: projectPath, agentID: "claude-code", scope: .project(root: projectRoot))]
+        let discovered = [
+            DiscoveredSkill(path: projectPath, agentID: "claude-code", scope: .project(root: projectRoot))
+        ]
         #expect(ShadowingDetector.detect(discovered: discovered).isEmpty)
     }
 
     @Test func doesNotFlagShadowingAcrossDifferentAgents() {
         let discovered = [
             DiscoveredSkill(path: globalPath, agentID: "claude-code", scope: .global),
-            DiscoveredSkill(path: projectPath, agentID: "codex", scope: .project(root: projectRoot)),
+            DiscoveredSkill(path: projectPath, agentID: "codex", scope: .project(root: projectRoot))
         ]
         #expect(ShadowingDetector.detect(discovered: discovered).isEmpty)
     }
@@ -56,7 +58,7 @@ struct ShadowingDetectorTests {
         let discovered = [
             DiscoveredSkill(path: globalPath, agentID: "claude-code", scope: .global),
             DiscoveredSkill(path: projectPath, agentID: "claude-code", scope: .project(root: projectRoot)),
-            DiscoveredSkill(path: otherProjectPath, agentID: "claude-code", scope: .project(root: otherProjectRoot)),
+            DiscoveredSkill(path: otherProjectPath, agentID: "claude-code", scope: .project(root: otherProjectRoot))
         ]
 
         let shadowed = ShadowingDetector.detect(discovered: discovered)

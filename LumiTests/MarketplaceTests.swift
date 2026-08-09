@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct MarketplaceTests {
 
@@ -67,12 +67,16 @@ struct MarketplaceTests {
 
         let urls = Marketplace.discoveredURLs(environment: ["CLAUDE_CONFIG_DIR": configDir.path])
 
-        // Re-resolve both sides: contentsOfDirectory canonicalizes /var→/private/var; .resolvingSymlinksInPath() collapses back to /var.
+        // Re-resolve both sides: contentsOfDirectory canonicalizes /var→/private/var;
+        // .resolvingSymlinksInPath() collapses back to /var.
         let resolvedUrls = Set(urls.map { $0.resolvingSymlinksInPath().path })
-        let expectedPaths = Set([
-            resolvedConfigDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").resolvingSymlinksInPath().path,
-            resolvedConfigDir.appendingPathComponent("plugins/marketplaces/expo-plugins/.claude-plugin/marketplace.json").resolvingSymlinksInPath().path
-        ])
+        let claudePluginsPath = resolvedConfigDir
+            .appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json")
+            .resolvingSymlinksInPath().path
+        let expoPluginsPath = resolvedConfigDir
+            .appendingPathComponent("plugins/marketplaces/expo-plugins/.claude-plugin/marketplace.json")
+            .resolvingSymlinksInPath().path
+        let expectedPaths = Set([claudePluginsPath, expoPluginsPath])
 
         #expect(resolvedUrls == expectedPaths)
     }
@@ -89,9 +93,12 @@ struct MarketplaceTests {
 
         let urls = Marketplace.discoveredURLs(environment: ["CLAUDE_CONFIG_DIR": configDir.path])
 
-        // Re-resolve both sides: contentsOfDirectory canonicalizes /var→/private/var; .resolvingSymlinksInPath() collapses back to /var.
+        // Re-resolve both sides: contentsOfDirectory canonicalizes /var→/private/var;
+        // .resolvingSymlinksInPath() collapses back to /var.
         let resolvedUrls = urls.map { $0.resolvingSymlinksInPath().path }
-        let expectedPath = resolvedConfigDir.appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json").resolvingSymlinksInPath().path
+        let expectedPath = resolvedConfigDir
+            .appendingPathComponent("plugins/marketplaces/claude-plugins-official/.claude-plugin/marketplace.json")
+            .resolvingSymlinksInPath().path
 
         #expect(resolvedUrls == [expectedPath])
     }
