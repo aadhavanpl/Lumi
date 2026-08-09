@@ -7,6 +7,8 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var store = InventoryStore()
+    // Tags the list's grouped rows with their primary SkillInventoryItem's id (see
+    // SkillListView), so this still resolves to a single item for the detail pane.
     @State private var selectedItemID: String?
 
     var body: some View {
