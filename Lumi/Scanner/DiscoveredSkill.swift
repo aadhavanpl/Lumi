@@ -7,9 +7,18 @@
 
 import Foundation
 
-enum SkillScope: Equatable {
+enum SkillScope: Hashable {
     case global
     case project(root: URL)
+}
+
+extension SkillScope {
+    var displayName: String {
+        switch self {
+        case .global: return "Global"
+        case .project(let root): return root.lastPathComponent
+        }
+    }
 }
 
 struct DiscoveredSkill: Equatable {

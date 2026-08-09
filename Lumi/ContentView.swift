@@ -2,20 +2,41 @@
 //  ContentView.swift
 //  Lumi
 //
-//  Created by Aadhavan on 08/08/26.
-//
 
 import SwiftUI
 
 struct ContentView: View {
+    @State private var store = InventoryStore()
+    @State private var selectedItemID: String?
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationSplitView {
+            SidebarView(items: store.items, selection: $store.selection)
+        } content: {
+            SkillListView(
+                items: InventoryFiltering.filteredItems(store.items, selection: store.selection),
+                selection: $selectedItemID
+            )
+        } detail: {
+            SkillDetailView(item: store.items.first { $0.id == selectedItemID })
         }
-        .padding()
+        .toolbar {
+            ToolbarItem {
+                Button {
+                    Task { await store.refresh() }
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+            }
+        }
+        .task {
+            await store.refresh()
+        }
+        .overlay {
+            if store.isLoading && store.items.isEmpty {
+                ProgressView("Scanning skills…")
+            }
+        }
     }
 }
 

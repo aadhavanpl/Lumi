@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SkillOrigin: Equatable {
+enum SkillOrigin: Hashable {
     case plugin(name: String, marketplaceName: String, version: String)
     case repoInstall(source: String, skillFolderHash: String)
     case handWritten

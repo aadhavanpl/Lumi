@@ -288,4 +288,26 @@ struct SkillInventoryBuilderTests {
 
         #expect(items[0].statuses.isEmpty)
     }
+
+    @Test func idIsUniquePerSkillAndAgentPair() throws {
+        let root = makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let skillDir = root.appendingPathComponent("grill-me")
+        try writeSkillMD(in: skillDir, name: "grill-me")
+        let discovered = [
+            DiscoveredSkill(path: skillDir, agentID: "claude-code", scope: .global),
+            DiscoveredSkill(path: skillDir, agentID: "codex", scope: .global)
+        ]
+
+        let items = SkillInventoryBuilder.build(
+            discovered: discovered,
+            globalLockfile: emptyLockfile(),
+            installedPlugins: emptyInstalledPlugins(),
+            settings: try emptySettings(),
+            marketplaces: []
+        )
+
+        #expect(items.count == 2)
+        #expect(items[0].id != items[1].id)
+    }
 }
