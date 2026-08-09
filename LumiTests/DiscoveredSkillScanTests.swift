@@ -48,6 +48,28 @@ struct DiscoveredSkillScanTests {
         #expect(discovered[0].path.lastPathComponent == "my-skill")
     }
 
+    @Test func scanGlobalSkillsFindsSkillsReachedThroughASymlinkedDirectory() throws {
+        let base = makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: base) }
+        try write("actual-skills/my-skill/SKILL.md", in: base)
+        try FileManager.default.createDirectory(
+            at: base.appendingPathComponent("skills"),
+            withIntermediateDirectories: true
+        )
+        try FileManager.default.createSymbolicLink(
+            at: base.appendingPathComponent("skills/my-skill"),
+            withDestinationURL: base.appendingPathComponent("actual-skills/my-skill")
+        )
+
+        let registry = [agent("claude-code", base: base.path)]
+        let discovered = SkillScanner.scanGlobalSkills(registry: registry, environment: [:])
+
+        let skill = try #require(discovered.first)
+        #expect(discovered.count == 1)
+        #expect(skill.agentID == "claude-code")
+        #expect(skill.path.lastPathComponent == "my-skill")
+    }
+
     @Test func scanGlobalSkillsReturnsNothingForAgentsWithNoSkills() {
         let base = makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: base) }

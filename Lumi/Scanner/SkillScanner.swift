@@ -36,7 +36,8 @@ enum SkillScanner {
 
         for entry in entries {
             guard !skipDirectoryNames.contains(entry.lastPathComponent) else { continue }
-            guard (try? entry.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true else { continue }
+            let resolvedEntry = entry.resolvingSymlinksInPath()
+            guard (try? resolvedEntry.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true else { continue }
             walk(entry, fileManager: fileManager, into: &found)
         }
     }
