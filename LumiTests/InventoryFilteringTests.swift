@@ -102,6 +102,54 @@ struct InventoryFilteringTests {
         #expect(InventoryFiltering.distinctAgentIDs(in: items) == ["claude-code", "codex"])
     }
 
+    @Test func groupedRowsCollapsesSameNameAndScopeAcrossAgents() {
+        let items = [
+            item(name: "shared-skill", agentID: "codex"),
+            item(name: "shared-skill", agentID: "claude-code")
+        ]
+
+        let rows = InventoryFiltering.groupedRows(from: items)
+
+        #expect(rows.count == 1)
+        #expect(rows[0].agentIDs == ["claude-code", "codex"])
+    }
+
+    @Test func groupedRowsKeepsDifferentScopesSeparate() {
+        let projectRoot = URL(fileURLWithPath: "/tmp/my-project")
+        let items = [
+            item(name: "same-name", scope: .global),
+            item(name: "same-name", scope: .project(root: projectRoot))
+        ]
+
+        let rows = InventoryFiltering.groupedRows(from: items)
+
+        #expect(rows.count == 2)
+    }
+
+    @Test func groupedRowsPreservesFirstSeenOrder() {
+        let items = [
+            item(name: "zebra"),
+            item(name: "apple"),
+            item(name: "zebra", agentID: "codex")
+        ]
+
+        let rows = InventoryFiltering.groupedRows(from: items)
+
+        #expect(rows.map(\.name) == ["zebra", "apple"])
+        #expect(rows[0].agentIDs == ["claude-code", "codex"])
+    }
+
+    @Test func groupedRowUnionsStatusesAcrossItems() {
+        let items = [
+            item(name: "shared-skill", agentID: "codex", statuses: [.installedButDisabled]),
+            item(name: "shared-skill", agentID: "claude-code", statuses: [])
+        ]
+
+        let rows = InventoryFiltering.groupedRows(from: items)
+
+        #expect(rows[0].statuses == [.installedButDisabled])
+    }
+
     @Test func needsAttentionCountMatchesFilteredItemsCount() {
         let items = [
             item(name: "healthy", statuses: []),

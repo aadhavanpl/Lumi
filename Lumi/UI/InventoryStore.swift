@@ -25,7 +25,7 @@ final class InventoryStore {
         isLoading = false
     }
 
-    nonisolated static func buildInventory(
+    static func buildInventory(
         registry: [AgentDefinition],
         environment: [String: String],
         fileManager: FileManager
