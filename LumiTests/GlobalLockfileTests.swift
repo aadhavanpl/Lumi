@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct GlobalLockfileTests {
 
@@ -60,7 +60,7 @@ struct GlobalLockfileTests {
         components.second = 13
         components.nanosecond = 669_000_000
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "UTC")!
+        calendar.timeZone = try #require(TimeZone(identifier: "UTC"))
         let expected = try #require(calendar.date(from: components))
 
         #expect(abs(entry.installedAt.timeIntervalSince(expected)) < 0.001)

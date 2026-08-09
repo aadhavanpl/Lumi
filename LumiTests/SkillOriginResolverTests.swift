@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct SkillOriginResolverTests {
 
@@ -60,7 +60,11 @@ struct SkillOriginResolverTests {
             "superpowers@claude-plugins-official": [pluginEntry(installPath: installPath, version: "6.0.3")]
         ])
 
-        let origin = SkillOriginResolver.resolve(path: skillPath, globalLockfile: lockfile([:]), installedPlugins: plugins)
+        let origin = SkillOriginResolver.resolve(
+            path: skillPath,
+            globalLockfile: lockfile([:]),
+            installedPlugins: plugins
+        )
 
         #expect(origin == .plugin(name: "superpowers", marketplaceName: "claude-plugins-official", version: "6.0.3"))
     }
@@ -69,7 +73,11 @@ struct SkillOriginResolverTests {
         let skillPath = URL(fileURLWithPath: "/Users/aadhavan/.agents/skills/grill-me")
         let skills = lockfile(["grill-me": lockfileEntry()])
 
-        let origin = SkillOriginResolver.resolve(path: skillPath, globalLockfile: skills, installedPlugins: installedPlugins([:]))
+        let origin = SkillOriginResolver.resolve(
+            path: skillPath,
+            globalLockfile: skills,
+            installedPlugins: installedPlugins([:])
+        )
 
         #expect(origin == .repoInstall(
             source: "mattpocock/skills",

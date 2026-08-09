@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import Testing
 @testable import Lumi
+import Testing
 
 struct SkillStatusDescriptionTests {
 
