@@ -18,14 +18,14 @@ struct SidebarView: View {
 
             Section("By Scope") {
                 ForEach(InventoryFiltering.distinctScopes(in: items), id: \.self) { scope in
-                    Label(scope.displayName, systemImage: "folder")
+                    Label(scope.displayName, systemImage: scope.systemImage)
                         .tag(SidebarSection.byScope(scope))
                 }
             }
 
             Section("By Agent") {
                 ForEach(InventoryFiltering.distinctAgentIDs(in: items), id: \.self) { agentID in
-                    Label(agentID, systemImage: "cpu")
+                    Label(AgentIcon.displayName(forAgentID: agentID), systemImage: "cpu")
                         .tag(SidebarSection.byAgent(agentID))
                 }
             }

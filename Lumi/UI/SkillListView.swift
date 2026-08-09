@@ -60,9 +60,8 @@ private struct SkillRow: View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    if !row.statuses.isEmpty {
-                        Circle().fill(.red).frame(width: 6, height: 6)
-                    }
+                    Circle().fill(.red).frame(width: 6, height: 6)
+                        .opacity(row.statuses.isEmpty ? 0 : 1)
                     Text(row.name).fontWeight(.semibold)
                 }
                 if let description = row.description {
@@ -74,7 +73,7 @@ private struct SkillRow: View {
             OriginChip(origin: row.origin)
                 .frame(width: columnWidths.origin, alignment: .leading)
 
-            Text(row.scope.displayName)
+            Label(row.scope.displayName, systemImage: row.scope.systemImage)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(width: columnWidths.scope, alignment: .leading)
@@ -148,20 +147,25 @@ private struct AgentIconView: View {
     private let diameter: CGFloat = 20
 
     var body: some View {
-        Group {
-            if let image = NSImage(named: AgentIcon.assetName(forAgentID: agentID)) {
-                Image(nsImage: image).resizable().scaledToFit()
-            } else {
-                Text(agentID.prefix(2).uppercased())
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .background(.secondary.opacity(0.15))
-            }
+        ZStack {
+            Circle().fill(AgentIcon.brandColor(forAgentID: agentID))
+            logo.padding(4)
         }
         .frame(width: diameter, height: diameter)
         .clipShape(Circle())
         .overlay(Circle().strokeBorder(.background, lineWidth: 1.5))
-        .help(agentID)
+        .help(AgentIcon.displayName(forAgentID: agentID))
+    }
+
+    @ViewBuilder
+    private var logo: some View {
+        if let image = NSImage(named: AgentIcon.assetName(forAgentID: agentID)) {
+            Image(nsImage: image).resizable().scaledToFit()
+        } else {
+            Text(agentID.prefix(2).uppercased())
+                .font(.system(size: 8, weight: .semibold))
+                .foregroundStyle(.white)
+        }
     }
 }
 

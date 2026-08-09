@@ -21,8 +21,10 @@ struct ContentView: View {
                 items: InventoryFiltering.filteredItems(store.items, selection: store.selection),
                 selection: $selectedItemID
             )
+            .navigationSplitViewColumnWidth(min: 420, ideal: 720, max: .infinity)
         } detail: {
             SkillDetailView(item: store.items.first { $0.id == selectedItemID })
+                .navigationSplitViewColumnWidth(min: 280, ideal: 340, max: 480)
         }
         .toolbar {
             ToolbarItem {

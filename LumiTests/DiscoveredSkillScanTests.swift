@@ -117,4 +117,10 @@ struct DiscoveredSkillScanTests {
         let root = URL(fileURLWithPath: "/tmp/my-project")
         #expect(SkillScope.project(root: root).displayName == "my-project")
     }
+
+    @Test func systemImageIsAGlobeForGlobalAndAFolderForProject() {
+        #expect(SkillScope.global.systemImage == "globe")
+        let root = URL(fileURLWithPath: "/tmp/my-project")
+        #expect(SkillScope.project(root: root).systemImage == "folder")
+    }
 }
