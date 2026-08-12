@@ -12,10 +12,19 @@ skill have drifted apart. Lumi is an inventory browser, not a security or auditi
 > **Status:** early development. No app functionality yet — see [`docs/SPEC-v1.md`](docs/SPEC-v1.md)
 > for the V1 scope and build plan. Screenshots coming once there's a UI worth showing.
 
+## Installing
+
+```bash
+brew install --cask aadhavanpl/tap/lumi
+```
+
+Updates land with `brew upgrade --cask lumi`. Builds are Developer ID–signed and notarized —
+see [`docs/RELEASING.md`](docs/RELEASING.md) for how releases are cut.
+
 ## Requirements
 
 - macOS 26+
-- Xcode 26+
+- Xcode 26+ (to build from source)
 
 ## Building
 
