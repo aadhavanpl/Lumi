@@ -35,11 +35,17 @@ struct SkillFrontmatter: Equatable {
             guard !value.isEmpty, !["|", ">", "|-", ">-", "|+", ">+"].contains(value) else { continue }
 
             switch key {
-            case "name": name = value
-            case "description": description = value
+            case "name": name = unquoted(value)
+            case "description": description = unquoted(value)
             default: break
             }
         }
         return SkillFrontmatter(name: name, description: description)
+    }
+
+    private static func unquoted(_ value: String) -> String {
+        guard value.count >= 2, let first = value.first, let last = value.last, first == last,
+              first == "\"" || first == "'" else { return value }
+        return String(value.dropFirst().dropLast())
     }
 }

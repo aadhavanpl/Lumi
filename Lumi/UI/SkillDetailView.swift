@@ -60,7 +60,9 @@ struct SkillDetailView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Location").font(.headline)
             Text(item.path.path).font(.system(.body, design: .monospaced)).textSelection(.enabled)
-            Text("\(item.scope.displayName) · \(item.agentID)").font(.caption).foregroundStyle(.secondary)
+            Text("\(item.scope.displayName) · \(AgentIcon.displayName(forAgentID: item.agentID))")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 

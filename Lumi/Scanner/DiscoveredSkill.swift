@@ -19,6 +19,13 @@ extension SkillScope {
         case .project(let root): return root.lastPathComponent
         }
     }
+
+    var systemImage: String {
+        switch self {
+        case .global: return "globe"
+        case .project: return "folder"
+        }
+    }
 }
 
 struct DiscoveredSkill: Equatable {

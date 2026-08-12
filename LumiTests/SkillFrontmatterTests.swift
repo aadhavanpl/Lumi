@@ -42,6 +42,22 @@ struct SkillFrontmatterTests {
         #expect(frontmatter.description == "Guidance for distinctive, intentional visual design.")
     }
 
+    @Test func stripsMatchingQuotesFromYAMLQuotedScalarValues() throws {
+        let root = makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        try write("SKILL.md", in: root, contents: """
+        ---
+        name: "imagegen"
+        description: "Generate or edit raster images."
+        ---
+        """)
+
+        let frontmatter = SkillFrontmatter.parse(contentsOf: root.appendingPathComponent("SKILL.md"))
+
+        #expect(frontmatter.name == "imagegen")
+        #expect(frontmatter.description == "Generate or edit raster images.")
+    }
+
     @Test func returnsNilFieldsWhenFileDoesNotExist() {
         let missingPath = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
