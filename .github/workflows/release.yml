@@ -1,0 +1,131 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+env:
+  TEAM_ID: N53AY583X7
+
+jobs:
+  release:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select latest available Xcode 26
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE_PATH" ]; then
+            echo "No Xcode 26.x found on this runner image" >&2
+            ls /Applications | grep Xcode
+            exit 1
+          fi
+          sudo xcode-select -s "$XCODE_PATH"
+          xcodebuild -version
+
+      - name: Derive version from tag
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Tag $GITHUB_REF_NAME is not vMAJOR.MINOR.PATCH" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Import Developer ID certificate
+        env:
+          P12_BASE64: ${{ secrets.DEVELOPER_ID_P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/build.keychain-db"
+          KEYCHAIN_PASSWORD=$(uuidgen)
+          echo "$P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "$P12_PASSWORD" \
+            -t cert -f pkcs12 -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" > /dev/null
+          security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
+          rm "$RUNNER_TEMP/cert.p12"
+          security find-identity -v -p codesigning "$KEYCHAIN"
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -project Lumi.xcodeproj \
+            -scheme Lumi \
+            -configuration Release \
+            -destination 'generic/platform=macOS' \
+            -archivePath "$RUNNER_TEMP/Lumi.xcarchive" \
+            MARKETING_VERSION=${{ steps.version.outputs.version }} \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            DEVELOPMENT_TEAM=$TEAM_ID \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            OTHER_CODE_SIGN_FLAGS="--timestamp"
+
+      - name: Export
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Lumi.xcarchive" \
+            -exportOptionsPlist scripts/ExportOptions.plist \
+            -exportPath "$RUNNER_TEMP/export"
+
+      - name: Notarize and staple
+        env:
+          ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          APP="$RUNNER_TEMP/export/Lumi.app"
+          echo "$ASC_KEY_P8_BASE64" | base64 --decode > "$RUNNER_TEMP/asc.p8"
+          ditto -c -k --keepParent "$APP" "$RUNNER_TEMP/notarize.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" \
+            --key "$RUNNER_TEMP/asc.p8" \
+            --key-id "$ASC_KEY_ID" \
+            --issuer "$ASC_ISSUER_ID" \
+            --wait
+          rm "$RUNNER_TEMP/asc.p8"
+          xcrun stapler staple "$APP"
+          spctl -a -vvv -t install "$APP"
+
+      - name: Package
+        id: package
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          ZIP="$PWD/Lumi-$VERSION.zip"
+          ditto -c -k --keepParent "$RUNNER_TEMP/export/Lumi.app" "$ZIP"
+          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+          echo "sha256=$(shasum -a 256 "$ZIP" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "${{ steps.package.outputs.zip }}" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes
+
+      - name: Bump Homebrew cask
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          SHA256: ${{ steps.package.outputs.sha256 }}
+        run: |
+          git clone "https://x-access-token:$GH_TOKEN@github.com/${{ github.repository_owner }}/homebrew-tap.git" "$RUNNER_TEMP/tap"
+          cd "$RUNNER_TEMP/tap"
+          sed -i '' -E "s/^  version \".*\"$/  version \"$VERSION\"/" Casks/lumi.rb
+          sed -i '' -E "s/^  sha256 \".*\"$/  sha256 \"$SHA256\"/" Casks/lumi.rb
+          git diff --exit-code && { echo "Cask unchanged — nothing to push" >&2; exit 1; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "lumi $VERSION"
+          git push
