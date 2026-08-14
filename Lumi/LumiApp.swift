@@ -13,5 +13,8 @@ struct LumiApp: App {
         WindowGroup {
             ContentView()
         }
+        Settings {
+            SettingsView()
+        }
     }
 }
