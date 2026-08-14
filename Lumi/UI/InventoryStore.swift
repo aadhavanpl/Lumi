@@ -23,18 +23,29 @@ final class InventoryStore {
         isLoading = true
         await Task.yield()
         let resolvedRegistry = registry ?? (try? AgentRegistry.loadAll()) ?? []
-        items = Self.buildInventory(registry: resolvedRegistry, environment: environment, fileManager: fileManager)
+        let workspaces = WorkspaceStore.load()
+        items = Self.buildInventory(
+            registry: resolvedRegistry,
+            workspaces: workspaces,
+            environment: environment,
+            fileManager: fileManager
+        )
         isLoading = false
     }
 
     nonisolated static func buildInventory(
         registry: [AgentDefinition],
+        workspaces: [URL] = [],
         environment: [String: String],
         fileManager: FileManager
     ) -> [SkillInventoryItem] {
         let discovered = SkillScanner.scanGlobalSkills(
             registry: registry,
             environment: environment,
+            fileManager: fileManager
+        ) + SkillScanner.scanProjectSkills(
+            registry: registry,
+            projectRoots: workspaces,
             fileManager: fileManager
         )
 
