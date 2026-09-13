@@ -30,17 +30,15 @@ struct SidebarView: View {
                 }
             }
 
-            Label("Plugins", systemImage: "puzzlepiece.extension")
-                .tag(SidebarSection.plugins)
+            // Label("Plugins", systemImage: "puzzlepiece.extension")
+            //     .tag(SidebarSection.plugins)
 
-            Label("Needs Attention", systemImage: "exclamationmark.circle")
-                .badge(needsAttentionCount)
-                .tag(SidebarSection.needsAttention)
+            // Label("Needs Attention", systemImage: "exclamationmark.circle")
+            //     .badge(needsAttentionCount)
+            //     .tag(SidebarSection.needsAttention)
         }
     }
 
-    /// List(selection:) on macOS requires an optional binding; the store's selection always
-    /// has a concrete default, so this adapts between the two without exposing Optional upward.
     private var selectionBinding: Binding<SidebarSection?> {
         Binding(get: { selection }, set: { newValue in if let newValue { selection = newValue } })
     }

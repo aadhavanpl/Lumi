@@ -124,8 +124,6 @@ private struct OriginChip: View {
     }
 }
 
-/// Overlapping circular logos, one per agent the skill is installed for. A single agent
-/// renders with no overlap; each additional avatar stacks partially behind the previous one.
 private struct AgentAvatarStack: View {
     let agentIDs: [String]
 
