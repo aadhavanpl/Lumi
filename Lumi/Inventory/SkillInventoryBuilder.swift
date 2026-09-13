@@ -11,6 +11,7 @@ struct SkillInventoryItem: Hashable {
     let name: String
     let description: String?
     let path: URL
+    let createdAt: Date?
     let agentID: String
     let scope: SkillScope
     let origin: SkillOrigin
@@ -48,6 +49,7 @@ enum SkillInventoryBuilder {
                 name: frontmatter.name ?? skill.path.lastPathComponent,
                 description: frontmatter.description,
                 path: skill.path,
+                createdAt: fileManager.creationDate(of: skill.path),
                 agentID: skill.agentID,
                 scope: skill.scope,
                 origin: origin,
@@ -89,5 +91,11 @@ enum SkillInventoryBuilder {
         }
 
         return discovered.map(buildItem)
+    }
+}
+
+private extension FileManager {
+    func creationDate(of url: URL) -> Date? {
+        (try? attributesOfItem(atPath: url.path))?[.creationDate] as? Date
     }
 }

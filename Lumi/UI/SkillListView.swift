@@ -35,7 +35,7 @@ struct SkillListView: View {
             Text("Origin").frame(width: columnWidths.origin, alignment: .leading)
             Text("Scope").frame(width: columnWidths.scope, alignment: .leading)
             Text("Agent").frame(width: columnWidths.agent, alignment: .leading)
-            Text("Version").frame(width: columnWidths.version, alignment: .leading)
+            Text("Created at").frame(width: columnWidths.created, alignment: .leading)
         }
         .font(.caption)
         .foregroundStyle(.secondary)
@@ -49,7 +49,7 @@ struct ColumnWidths {
     let origin: CGFloat = 110
     let scope: CGFloat = 70
     let agent: CGFloat = 76
-    let version: CGFloat = 70
+    let created: CGFloat = 90
 }
 
 private struct SkillRow: View {
@@ -81,17 +81,12 @@ private struct SkillRow: View {
             AgentAvatarStack(agentIDs: row.agentIDs)
                 .frame(width: columnWidths.agent, alignment: .leading)
 
-            Text(versionLabel(row.origin))
+            Text(row.createdAt?.formatted(date: .abbreviated, time: .omitted) ?? "—")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                .frame(width: columnWidths.version, alignment: .leading)
+                .frame(width: columnWidths.created, alignment: .leading)
         }
         .padding(.vertical, 4)
-    }
-
-    private func versionLabel(_ origin: SkillOrigin) -> String {
-        if case .plugin(_, _, let version) = origin { return "v\(version)" }
-        return "—"
     }
 }
 

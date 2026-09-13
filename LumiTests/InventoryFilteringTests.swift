@@ -22,6 +22,7 @@ struct InventoryFilteringTests {
             name: name,
             description: nil,
             path: URL(fileURLWithPath: "/tmp/\(name)"),
+            createdAt: nil,
             agentID: agentID,
             scope: scope,
             origin: origin,
