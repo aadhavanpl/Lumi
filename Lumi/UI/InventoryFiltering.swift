@@ -77,6 +77,7 @@ struct GroupedSkillRow: Identifiable, Hashable {
     var primaryItem: SkillInventoryItem { items[0] }
     var name: String { primaryItem.name }
     var description: String? { primaryItem.description }
+    var createdAt: Date? { items.compactMap(\.createdAt).min() }
     var origin: SkillOrigin { primaryItem.origin }
     var scope: SkillScope { primaryItem.scope }
     var agentIDs: [String] { items.map(\.agentID) }
