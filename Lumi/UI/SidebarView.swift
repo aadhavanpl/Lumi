@@ -29,22 +29,11 @@ struct SidebarView: View {
                         .tag(SidebarSection.byAgent(agentID))
                 }
             }
-
-            // Label("Plugins", systemImage: "puzzlepiece.extension")
-            //     .tag(SidebarSection.plugins)
-
-            // Label("Needs Attention", systemImage: "exclamationmark.circle")
-            //     .badge(needsAttentionCount)
-            //     .tag(SidebarSection.needsAttention)
         }
     }
 
     private var selectionBinding: Binding<SidebarSection?> {
         Binding(get: { selection }, set: { newValue in if let newValue { selection = newValue } })
-    }
-
-    private var needsAttentionCount: Int {
-        InventoryFiltering.filteredItems(items, selection: .needsAttention).count
     }
 }
 
